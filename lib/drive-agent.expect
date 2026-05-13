@@ -1,0 +1,50 @@
+#!/usr/bin/env expect -f
+# Drives an interactive AI CLI: type "Hey!", submit, wait for the response
+# to settle, then quit. Usage: drive-agent.expect <binary>
+
+if {$argc < 1} {
+    puts stderr "usage: drive-agent.expect <binary>"
+    exit 2
+}
+set bin [lindex $argv 0]
+
+set idle_secs 4    ;# stop waiting after this many seconds of silence
+set hard_cap  90   ;# absolute ceiling per agent run
+
+log_user 1
+
+if {[catch {spawn -noecho $bin} err]} {
+    puts stderr "failed to spawn $bin: $err"
+    exit 3
+}
+set pid [exp_pid]
+
+# Give the TUI a moment to render.
+sleep 2
+# Type and submit.
+send -- "Hey!"
+send "\r"
+# Give the TUI a moment to render.
+sleep 2
+
+# Idle-wait: each chunk of output re-arms the timer; we exit when nothing
+# arrives for idle_secs (response is done streaming) or hard_cap elapses.
+set start [clock seconds]
+set timeout $idle_secs
+expect {
+    -re ".+" {
+        if {[expr {[clock seconds] - $start}] >= $hard_cap} { } else { exp_continue }
+    }
+    timeout { }
+}
+
+# Graceful quit: two Ctrl+C with a beat between.
+send "\x03"
+sleep 0.5
+send "\x03"
+
+# Give it a moment to exit cleanly; force-kill if it lingers.
+set timeout 5
+expect eof
+catch { exec kill -TERM $pid } _
+catch { exec kill -KILL $pid } _
