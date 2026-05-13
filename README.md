@@ -1,12 +1,12 @@
-# agent-maxprime
+# Agent Maxprime
 
 `codex` and `claude` both meter usage in **5-hour rolling windows**. If you
 don't start a session, that window's quota is gone, hence wasted. This tool
-"primes" each CLI three times a day (06:30, 11:30, 16:30) so the 5-hour
+"primes" each Agebt CLI three times a day (06:30, 11:30, 16:30) so the 5-hour
 windows are always opened the moment they reset, maxing out the daily usage
 budget on both subscriptions without you thinking about it.
 
-It just spawns each CLI, types "Hey!", waits for the reply, and quits.
+It just spawns each Agent CLI, types "Hey!", waits for the reply, and quits.
 
 ---
 
@@ -27,14 +27,12 @@ It just spawns each CLI, types "Hey!", waits for the reply, and quits.
    actual "Hey!" message.
 
 2. (Optional) Edit `launchd/io.github.bunyodrafikov.agent-maxprime.plist` if you want
-   different tools or different times. The two things to look for:
+   different tool set or custom schedule. Otherwise, default values applied:
+   
+   - **Tools** — `codex` and `claude`.
+   - **Scheduled Runs** — 06:30, 11:30, 16:30.
 
-   - **Tools** — trailing `<string>` entries under `ProgramArguments`
-     (default: `codex` and `claude`).
-   - **Schedule** — `<dict>` entries under `StartCalendarInterval`
-     (default: 06:30, 11:30, 16:30).
-
-3. Install the schedule:
+4. Install the schedule:
 
    ```sh
    ./scripts/install.sh
@@ -66,9 +64,11 @@ less -R "$(ls -t ~/Library/Caches/agent-maxprime/run-*.log | head -1)"
 
 ## Troubleshooting
 
-- **`command not found` in the launchd log** — edit `PATH` under
-  `EnvironmentVariables` in the plist, re-run `./scripts/install.sh`.
+- **`command not found` in the launchd log**:<br>
+  Edit `PATH` under `EnvironmentVariables` in the plist to your local `$PATH` value, re-run `./scripts/install.sh`.
+
 - **Check schedule status**:
+
   ```sh
   launchctl print gui/$UID/io.github.bunyodrafikov.agent-maxprime
   ```
