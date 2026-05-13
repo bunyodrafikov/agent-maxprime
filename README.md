@@ -12,9 +12,9 @@ It just spawns each Agent CLI, types "Hey!", waits for the reply, and quits.
 
 ## Setup
 
-1. **Trust this folder once, per CLI.** From inside this repo dir, launch
-   each AI tool, you intend to schedule and accept its "do you trust this
-   folder?" prompt:
+1. **Trust the running folder on Agent CLI.** From inside this repo dir on
+   your machine, launch each AI tool, you intend to schedule and accept its 
+   "do you trust this folder?" prompt:
 
    ```sh
    cd path/to/agent-maxprime
@@ -22,11 +22,11 @@ It just spawns each Agent CLI, types "Hey!", waits for the reply, and quits.
    claude     # same
    ```
 
-   Both CLIs remember the choice per-directory. Skipping this step means
+   Both default CLIs remember the choice per-directory. Skipping this step means
    every scheduled run will stop at the trust prompt and never reach the
    actual "Hey!" message.
 
-2. (Optional) Edit `launchd/io.github.bunyodrafikov.agent-maxprime.plist` if you want
+3. (Optional) Edit `launchd/io.github.bunyodrafikov.agent-maxprime.plist` if you want
    different tool set or custom schedule. Otherwise, default values applied:
    
    - **Tools** — `codex` and `claude`.
